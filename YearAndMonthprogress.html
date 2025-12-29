@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>Year & Month Progress Bar</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Roboto, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+      padding: 1rem;
+      box-sizing: border-box;
+    }
+
+    h1 {
+      font-size: clamp(1.5rem, 3vw, 2.5rem);
+      margin-bottom: 1rem;
+      color: #333;
+      text-align: center;
+    }
+
+    .progress-container {
+      width: 100%;
+      max-width: 600px;
+      border-radius: 1.5rem;
+      background: #fff;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      overflow: hidden;
+      position: relative;
+      margin-bottom: 2rem;
+    }
+
+    .progress-bar {
+      height: clamp(30px, 8vw, 50px);
+      width: 0%;
+      background: linear-gradient(90deg, #ff4b2b, #ff416c);
+      box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.5);
+      transition: width 1s ease-in-out;
+      animation: glow 1.5s infinite alternate;
+    }
+
+    @keyframes glow {
+      from { filter: brightness(1); }
+      to { filter: brightness(1.2); }
+    }
+
+    .label {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      font-weight: bold;
+      font-size: clamp(0.9rem, 3vw, 1.4rem);
+      line-height: clamp(30px, 8vw, 50px);
+      color: #222;
+      text-shadow: 1px 1px 2px rgba(255,255,255,0.7);
+      letter-spacing: 1px;
+      white-space: nowrap;
+    }
+
+    /* 円形プログレスバー */
+    .circle-container {
+      position: relative;
+      width: 180px;
+      height: 180px;
+    }
+
+    .circle {
+      transform: rotate(-90deg);
+    }
+
+    .circle-bg {
+      fill: none;
+      stroke: #eee;
+      stroke-width: 12;
+    }
+
+    .circle-progress {
+      fill: none;
+      stroke: url(#gradient);
+      stroke-width: 12;
+      stroke-linecap: round;
+      stroke-dasharray: 565; /* 2πr (r=90-12=78) */
+      stroke-dashoffset: 565;
+      transition: stroke-dashoffset 1s ease-in-out;
+    }
+
+    .circle-label {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #333;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <h1>📅 Yearly Progress</h1>
+  <div class="progress-container">
+    <div class="progress-bar" id="progress-bar"></div>
+    <div class="label" id="progress-label"></div>
+  </div>
+
+  <h1>🗓️ Monthly Progress</h1>
+  <div class="circle-container">
+    <svg class="circle" width="180" height="180">
+      <defs>
+        <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#36d1dc"/>
+          <stop offset="100%" stop-color="#5b86e5"/>
+        </linearGradient>
+      </defs>
+      <circle class="circle-bg" cx="90" cy="90" r="78"/>
+      <circle class="circle-progress" id="circle-progress" cx="90" cy="90" r="78"/>
+    </svg>
+    <div class="circle-label" id="circle-label"></div>
+  </div>
+
+  <script>
+    function updateProgressBars() {
+      const now = new Date();
+
+      // ==== 年の進捗 ====
+      const yearStart = new Date(now.getFullYear(), 0, 1);
+      const yearEnd = new Date(now.getFullYear() + 1, 0, 1);
+      const elapsedYear = now - yearStart;
+      const totalYear = yearEnd - yearStart;
+      const progressYear = (elapsedYear / totalYear) * 100;
+
+      const bar = document.getElementById("progress-bar");
+      const label = document.getElementById("progress-label");
+      bar.style.width = progressYear.toFixed(2) + "%";
+      label.textContent = `${now.getFullYear()} - ${progressYear.toFixed(2)}% 完了`;
+
+      // ==== 月の進捗 ====
+      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+      const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+      const elapsedMonth = now - monthStart;
+      const totalMonth = monthEnd - monthStart;
+      const progressMonth = (elapsedMonth / totalMonth) * 100;
+
+      const circle = document.getElementById("circle-progress");
+      const circleLabel = document.getElementById("circle-label");
+
+      const circumference = 2 * Math.PI * 78;
+      const offset = circumference - (progressMonth / 100) * circumference;
+      circle.style.strokeDasharray = circumference;
+      circle.style.strokeDashoffset = offset;
+
+      circleLabel.textContent = `${now.getMonth() + 1}月\n${progressMonth.toFixed(2)}% 完了`;
+    }
+
+    updateProgressBars();
+  </script>
+</body>
+</html>
