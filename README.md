@@ -1,6 +1,7 @@
 # YearAndMonthprogress
 
-1年の進捗率とその月の進捗率を表示するサイトです。
+1年の進捗率と月の進捗率を表示するサイトです。
+https://takuyash.github.io/YearAndMonthprogress/YearAndMonthprogress.html
 
 ## 免責事項
 
